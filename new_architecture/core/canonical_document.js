@@ -58,17 +58,142 @@
  * @property {string} [version] - Version of the CanonicalDocument schema. Default: "1.0.0"
  */
 
-// Example of how you might export or use these (optional, as JSDoc types are globally available for documentation)
-// These are not actual class instantiations but placeholders for type referencing if needed by some tools.
+class DocumentMetadata {
+  /**
+   * @param {object} params
+   * @param {string} [params.title]
+   * @param {string} [params.sourceUrl]
+   * @param {string} [params.author]
+   * @param {string} [params.dateScraped]
+   * @param {string} [params.publicationDate]
+   * @param {object<string, any>} [params.additionalProperties]
+   */
+  constructor({ title, sourceUrl, author, dateScraped, publicationDate, additionalProperties = {} } = {}) {
+    this.title = title;
+    this.sourceUrl = sourceUrl;
+    this.author = author;
+    this.dateScraped = dateScraped;
+    this.publicationDate = publicationDate;
+    this.additionalProperties = additionalProperties;
+  }
+}
+
+class ImageResource {
+  /**
+   * @param {object} params
+   * @param {string} params.id
+   * @param {string} params.originalUrl
+   * @param {string} [params.resolvedUrl]
+   * @param {string} [params.altText]
+   * @param {string} [params.format]
+   * @param {number} [params.width]
+   * @param {number} [params.height]
+   */
+  constructor({ id, originalUrl, resolvedUrl, altText, format, width, height } = {}) {
+    if (!id || !originalUrl) {
+      throw new Error("ImageResource requires an 'id' and 'originalUrl'.");
+    }
+    this.id = id;
+    this.originalUrl = originalUrl;
+    this.resolvedUrl = resolvedUrl;
+    this.altText = altText;
+    this.format = format;
+    this.width = width;
+    this.height = height;
+  }
+}
+
+class CanonicalBlock {
+  /**
+   * @param {object} params
+   * @param {string} params.blockId
+   * @param {'PARAGRAPH'|'HEADER'|'UL'|'OL'|'LI'|'IMAGE_REFERENCE'|'TABLE'|'TEXT_CONTENT'|'QUOTE'|'CODE_BLOCK'|'HORIZONTAL_RULE'|'CUSTOM'} params.type
+   * @param {string} [params.text]
+   * @param {number} [params.level]
+   * @param {Array<CanonicalBlock|string>} [params.children]
+   * @param {string} [params.resourceId]
+   * @param {string} [params.src]
+   * @param {string} [params.altText]
+   * @param {string} [params.caption]
+   * @param {Array<string>} [params.headers]
+   * @param {Array<Array<string>>} [params.rows]
+   * @param {string} [params.language]
+   * @param {string} [params.attribution]
+   * @param {object<string, any>} [params.customProperties]
+   */
+  constructor({
+    blockId,
+    type,
+    text,
+    level,
+    children = [],
+    resourceId,
+    src,
+    altText,
+    caption,
+    headers = [],
+    rows = [],
+    language,
+    attribution,
+    customProperties = {}
+  } = {}) {
+    if (!blockId || !type) {
+      throw new Error("CanonicalBlock requires a 'blockId' and 'type'.");
+    }
+    this.blockId = blockId;
+    this.type = type;
+    this.text = text;
+    this.level = level;
+    this.children = children; // Should be an array of CanonicalBlock instances or strings
+    this.resourceId = resourceId;
+    this.src = src;
+    this.altText = altText;
+    this.caption = caption;
+    this.headers = headers; // For TABLE type
+    this.rows = rows; // For TABLE type, array of arrays of strings
+    this.language = language; // For CODE_BLOCK
+    this.attribution = attribution; // For QUOTE
+    this.customProperties = customProperties; // For CUSTOM or extending types
+  }
+}
+
+class Section {
+  /**
+   * @param {object} params
+   * @param {string} params.sectionId
+   * @param {string} [params.header]
+   * @param {Array<CanonicalBlock>} [params.contentBlocks]
+   */
+  constructor({ sectionId, header, contentBlocks = [] } = {}) {
+    if (!sectionId) {
+      throw new Error("Section requires a 'sectionId'.");
+    }
+    this.sectionId = sectionId;
+    this.header = header;
+    this.contentBlocks = contentBlocks; // Should be an array of CanonicalBlock instances
+  }
+}
+
+class CanonicalDocument {
+  /**
+   * @param {object} params
+   * @param {DocumentMetadata} [params.documentMetadata]
+   * @param {Array<ImageResource>} [params.imageResources]
+   * @param {Array<Section>} [params.sections]
+   * @param {string} [params.version]
+   */
+  constructor({ documentMetadata = new DocumentMetadata(), imageResources = [], sections = [], version = "1.0.0" } = {}) {
+    this.documentMetadata = documentMetadata; // Should be an instance of DocumentMetadata
+    this.imageResources = imageResources; // Should be an array of ImageResource instances
+    this.sections = sections; // Should be an array of Section instances
+    this.version = version;
+  }
+}
+
 module.exports = {
-  /** @type {DocumentMetadata} */
-  DocumentMetadata: { title: undefined, sourceUrl: undefined, author: undefined, dateScraped: undefined, publicationDate: undefined, additionalProperties: {} },
-  /** @type {ImageResource} */
-  ImageResource: { id: '', originalUrl: '', resolvedUrl: undefined, altText: undefined, format: undefined, width: undefined, height: undefined },
-  /** @type {CanonicalBlock} */
-  CanonicalBlock: { blockId: '', type: 'PARAGRAPH', text: undefined, level: undefined, children: [], resourceId: undefined, src: undefined, altText: undefined, caption: undefined, headers: [], rows: [], language: undefined, attribution: undefined, customProperties: {} },
-  /** @type {Section} */
-  Section: { sectionId: '', header: undefined, contentBlocks: [] },
-  /** @type {CanonicalDocument} */
-  CanonicalDocument: { documentMetadata: {}, imageResources: [], sections: [], version: '1.0.0' }
+  DocumentMetadata,
+  ImageResource,
+  CanonicalBlock,
+  Section,
+  CanonicalDocument
 };
