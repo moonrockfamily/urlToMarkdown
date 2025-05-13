@@ -2,11 +2,18 @@
   "dependencies": {
     "axios": "^1.9.0",
     "cheerio": "^1.0.0",
-    "express": "^5.1.0"
+    "express": "^5.1.0",
+    "pptxgenjs": "^4.0.0",
+    "sequelize": "^6.37.7",
+    "sqlite3": "^5.1.7"
   },
   "scripts": {
     "start": "node server.js",
     "start:server": "node server.js",
-    "start:cli": "node cli.js"
+    "start:cli": "node cli.js",
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0"
   }
 }
