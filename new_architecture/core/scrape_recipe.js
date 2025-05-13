@@ -1,25 +1,7 @@
-// Defines ScrapeRecipe, ExtractionRule, and CanonicalizationRule
+// Defines ScrapeRecipe
 
-/**
- * @typedef {object} ExtractionRule
- * @property {string} selector - CSS selector to find the element.
- * @property {string} type - The type of content to extract (e.g., 'text', 'image', 'table', 'list', 'heading').
- * @property {string} [attribute] - Optional attribute to extract (e.g., 'href' for an <a> tag, 'src' for an <img> tag).
- * @property {boolean} [multiple=false] - Whether to extract multiple elements matching the selector.
- * @property {string} [description] - A human-readable description of what this rule extracts.
- * @property {Array<ExtractionRule>} [children] - Nested extraction rules for complex elements (e.g., extracting rows and cells from a table).
- * @property {string} [metadataField] - If this rule extracts a piece of metadata, this specifies the metadata field name (e.g., 'title', 'author').
- */
-
-/**
- * @typedef {object} CanonicalizationRule
- * @property {string} type - The type of canonicalization to perform (e.g., 'remove_attributes', 'transform_links', 'clean_html', 'format_date').
- * @property {string} [description] - A human-readable description of what this rule does.
- * @property {object} [options] - Rule-specific options.
- * @property {Array<string>} [options.attributesToRemove] - For 'remove_attributes', list of HTML attributes to remove.
- * @property {string} [options.targetDateFormat] - For 'format_date', the desired date format.
- * @property {boolean} [options.removeEmptyTags] - For 'clean_html', whether to remove empty HTML tags.
- */
+// const { ExtractionRule } = require('./extraction_rule'); // No longer directly embedding ExtractionRule instances
+const { CanonicalizationRule } = require('./canonicalization_rule');
 
 /**
  * Defines a recipe for scraping content from a specific type of URL or website structure.
@@ -30,8 +12,7 @@
  * @property {string} name - A human-readable name for the recipe (e.g., "Blog Post Scraper", "Product Page Extractor").
  * @property {string} description - A brief description of what the recipe does or what kind of content it targets.
  * @property {string} version - Version of the recipe (e.g., "1.0.0").
- * @property {Array<string>} urlPatterns - An array of URL patterns (regex or simple wildcards) that this recipe applies to.
- * @property {Array<ExtractionRule>} extractionRules - An array of rules defining how to extract raw content.
+ * @property {Array<string>} extractionRuleIds - An array of ExtractionRule IDs defining how to extract raw content.
  * @property {Array<CanonicalizationRule>} canonicalizationRules - An array of rules defining how to transform extracted content into the canonical format.
  * @property {string} [expectedOutputType="CanonicalDocument"] - The expected output type after processing (e.g., "CanonicalDocument", "JSONSummary").
  * @property {object} [metadata] - Any other relevant metadata about the recipe (e.g., author, creationDate, lastModifiedDate).
@@ -40,3 +21,44 @@
  * @property {string} [metadata.lastModifiedDate]
  * @property {boolean} [isActive=true] - Whether the recipe is currently active and usable.
  */
+class ScrapeRecipe {
+  /**
+   * @param {object} params
+   * @param {string} params.id - Unique ID for the recipe.
+   * @param {string} params.name - Human-readable name.
+   * @param {string} params.description - Description of the recipe.
+   * @param {string} [params.version="1.0.0"] - Recipe version.
+   * @param {Array<string>} [params.extractionRuleIds] - Array of ExtractionRule IDs.
+   * @param {Array<CanonicalizationRule>} [params.canonicalizationRules] - Rules for transforming content.
+   * @param {string} [params.expectedOutputType="CanonicalDocument"] - Expected output type.
+   * @param {object} [params.metadata] - Other metadata (author, creationDate, etc.).
+   * @param {boolean} [params.isActive=true] - Whether the recipe is active.
+   */
+  constructor({
+    id,
+    name,
+    description,
+    version = "1.0.0",
+    extractionRuleIds = [], // Changed from extractionRules to extractionRuleIds
+    canonicalizationRules = [],
+    expectedOutputType = "CanonicalDocument",
+    metadata = {},
+    isActive = true
+  }) {
+    if (!id || !name /* || !urlPatterns || urlPatterns.length === 0 */) { // Removed urlPatterns from validation
+      throw new Error("ScrapeRecipe requires an 'id' and 'name'."); // Updated error message
+    }
+    this.id = id;
+    this.name = name;
+    this.description = description;
+    this.version = version;
+    // this.urlPatterns = urlPatterns; // Removed urlPatterns
+    this.extractionRuleIds = extractionRuleIds; // Changed from extractionRules
+    this.canonicalizationRules = canonicalizationRules.map(ruleData => ruleData instanceof CanonicalizationRule ? ruleData : new CanonicalizationRule(ruleData));
+    this.expectedOutputType = expectedOutputType;
+    this.metadata = metadata;
+    this.isActive = isActive;
+  }
+}
+
+module.exports = { ScrapeRecipe };
