@@ -105,23 +105,33 @@ function initializeControls() {
 
     if (copyMarkdownButton && markdownOutput) {
         copyMarkdownButton.addEventListener('click', () => {
-            navigator.clipboard.writeText(markdownOutput.textContent)
-                .then(() => alert('Markdown copied to clipboard!'))
-                .catch(err => {
-                    console.error('Failed to copy Markdown: ', err);
-                    alert('Failed to copy Markdown. See console for details.');
-                });
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(markdownOutput.textContent)
+                    .then(() => alert('Markdown copied to clipboard!'))
+                    .catch(err => {
+                        console.error('Failed to copy Markdown: ', err);
+                        alert('Failed to copy Markdown. See console for details.');
+                    });
+            } else {
+                console.warn('Clipboard API not available. Ensure you are on HTTPS or localhost.');
+                alert('Copy to clipboard is not available on insecure connections (HTTP). Please use HTTPS or copy manually.');
+            }
         });
     }
 
     if (copyHtmlButton && htmlPreview) {
         copyHtmlButton.addEventListener('click', () => {
-            navigator.clipboard.writeText(htmlPreview.innerHTML)
-                .then(() => alert('HTML source copied to clipboard!'))
-                .catch(err => {
-                    console.error('Failed to copy HTML: ', err);
-                    alert('Failed to copy HTML source. See console for details.');
-                });
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(htmlPreview.innerHTML)
+                    .then(() => alert('HTML source copied to clipboard!'))
+                    .catch(err => {
+                        console.error('Failed to copy HTML: ', err);
+                        alert('Failed to copy HTML source. See console for details.');
+                    });
+            } else {
+                console.warn('Clipboard API not available. Ensure you are on HTTPS or localhost.');
+                alert('Copy to clipboard is not available on insecure connections (HTTP). Please use HTTPS or copy manually.');
+            }
         });
     }
     
