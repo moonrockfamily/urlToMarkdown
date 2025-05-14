@@ -379,26 +379,22 @@ function renderSections() {
         labelWrapper.appendChild(headerSuffixSpan);
         
         headerControlsDiv.appendChild(labelWrapper);
+
+        // --- Edit Button ---
+        const editButton = document.createElement('button');
+        editButton.textContent = 'Edit Content';
+        editButton.className = 'edit-content-button';
+        editButton.setAttribute('aria-label', 'Edit section content');
+        headerControlsDiv.appendChild(editButton); // Add button to header controls
+
         sectionItemDiv.appendChild(headerControlsDiv);
 
-        // --- "Edit Content" Toggle Button ---
-        const editToggleButton = document.createElement('button');
-        editToggleButton.textContent = 'Edit Content';
-        editToggleButton.className = 'edit-content-toggle-button'; // Added for potential styling
-        // Add some basic styling to make it less prominent than other buttons
-        editToggleButton.style.padding = '2px 6px';
-        editToggleButton.style.fontSize = '0.8em';
-        editToggleButton.style.marginTop = '5px';
-        editToggleButton.style.marginBottom = '5px';
-        editToggleButton.style.cursor = 'pointer';
-        sectionItemDiv.appendChild(editToggleButton);
-
-        // --- Editable Content Area (initially hidden) ---
+        // --- Editable Content Area ---
         const contentTextarea = document.createElement('textarea');
         contentTextarea.className = 'editable-content-area';
         contentTextarea.setAttribute('aria-label', 'Section content');
         // Join contentMarkdown array into a string for textarea
-        contentTextarea.value = Array.isArray(section.contentMarkdown) ? section.contentMarkdown.join('\\n\\n') : '';
+        contentTextarea.value = Array.isArray(section.contentMarkdown) ? section.contentMarkdown.join('\n\n') : '';
         contentTextarea.style.display = 'none'; // Initially hidden
         contentTextarea.onchange = (e) => {
             // Split textarea content back into an array of strings for contentMarkdown
@@ -407,15 +403,11 @@ function renderSections() {
         };
         sectionItemDiv.appendChild(contentTextarea);
         
-        // Event listener for the toggle button
-        editToggleButton.onclick = () => {
-            if (contentTextarea.style.display === 'none') {
-                contentTextarea.style.display = ''; // Or 'block' or its default
-                editToggleButton.textContent = 'Hide Content';
-            } else {
-                contentTextarea.style.display = 'none';
-                editToggleButton.textContent = 'Edit Content';
-            }
+        // Event listener for the edit button
+        editButton.onclick = () => {
+            const isHidden = contentTextarea.style.display === 'none';
+            contentTextarea.style.display = isHidden ? 'block' : 'none';
+            editButton.textContent = isHidden ? 'Done Editing' : 'Edit Content';
         };
         
         sectionsContainer.appendChild(sectionItemDiv);
